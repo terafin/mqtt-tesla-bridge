@@ -76,7 +76,7 @@ client.on('message', (topic, message) => {
     }
 })
 
-var tjs = require('TeslaJS')
+var tjs = require('teslajs')
  
 var username = process.env.TESLA_USERNAME
 var password = process.env.TESLA_PASSWORD
