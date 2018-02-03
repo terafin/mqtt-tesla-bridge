@@ -61,7 +61,7 @@ client.on('message', (topic, message) => {
             if ( !_.isNil(setReserveError)) {
                 logging.error(JSON.stringify(setReserveError))
             }
-            logging.info('siteReserveResult: ' + JSON.stringify(siteReserveResult))
+            logging.debug('siteReserveResult: ' + JSON.stringify(siteReserveResult))
 
         })
 
@@ -70,7 +70,7 @@ client.on('message', (topic, message) => {
             if ( !_.isNil(setSiteModeError)) {
                 logging.error(JSON.stringify(setSiteModeError))
             }
-            logging.info('siteModeResult: ' + JSON.stringify(siteModeResult))
+            logging.debug('siteModeResult: ' + JSON.stringify(siteModeResult))
         })
                         
     }
@@ -116,6 +116,13 @@ const doPoll = function() {
             logging.info('=   Version: ' + version)
             logging.info('=   Current Battery Mode: ' + default_real_mode)
             logging.info('=   Current Battery Reserve %: ' + backup_reserve_percent)
+            client.smartPublish(topic_prefix + '/reserve/mode', default_real_mode.toString())
+            client.smartPublish(topic_prefix + '/reserve/percent', backup_reserve_percent.toString())
+            client.smartPublish(topic_prefix + '/system/version', version.toString())
+            client.smartPublish(topic_prefix + '/system/battery_count', batteryCount.toString())
+            client.smartPublish(topic_prefix + '/system/has_batteries', battery.toString())
+            client.smartPublish(topic_prefix + '/system/has_solar', solar.toString())
+            client.smartPublish(topic_prefix + '/system/has_grid', grid.toString())
 
             
             tjs.siteStatus(options, function(siteStatusError, siteStatus) {
@@ -140,7 +147,18 @@ const doPoll = function() {
                 logging.info('=   Battery Remaining: ' + energy_left)
                 logging.info('=   Battery %: ' + ((energy_left / total_pack_energy) * 100))
                 
-                
+                client.smartPublish(topic_prefix + '/reserve/mode', default_real_mode.toString())
+                client.smartPublish(topic_prefix + '/reserve/percent', backup_reserve_percent.toString())
+                client.smartPublish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString())
+                client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString())
+                client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString())
+                client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString())
+                client.smartPublish(topic_prefix + '/stats/grid_active', grid_status.toString())
+                client.smartPublish(topic_prefix + '/reserve/battery/percent', ((energy_left / total_pack_energy) * 100).toFixed(1).toString())
+                client.smartPublish(topic_prefix + '/reserve/battery/remaining', energy_left.toFixed(0).toString())
+                client.smartPublish(topic_prefix + '/reserve/battery/capacity', total_pack_energy.toString())
+                client.smartPublish(topic_prefix + '/reserve/battery/charging', (battery_power < 0) ? '1': '0')
+                client.smartPublish(topic_prefix + '/reserve/battery/discharging', (battery_power > 0) ? '1': '0')
             })
         }
     })
