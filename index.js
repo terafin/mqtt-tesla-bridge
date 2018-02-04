@@ -1,6 +1,6 @@
 const mqtt = require('mqtt')
 const _ = require('lodash')
-const logging = require('homeautomation-js-lib/logging.js')
+ const logging = require('homeautomation-js-lib/logging.js')
 const health = require('homeautomation-js-lib/health.js')
 const repeat = require('repeat')
 const request = require('request')
