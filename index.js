@@ -1,11 +1,9 @@
 const mqtt = require('mqtt')
 const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
-const repeat = require('repeat')
-const bodyParser = require('body-parser')
 const health = require('homeautomation-js-lib/health.js')
+const repeat = require('repeat')
 const request = require('request')
-var parseString = require('xml2js').parseString
 
 var loginToken = null
 var mainSite = null
@@ -89,16 +87,21 @@ const startPolling = function() {
     repeat(doPoll).every(5, 's').start.in(5, 'sec')
 }
 
-const doPoll = function() {
+function pollSiteInfo() {
     if ( _.isNil(loginToken)) return
     if ( _.isNil(mainSite)) return
-    logging.info('... polling')
+    
+    logging.info('Polling site info')
 
     var options = { authToken: loginToken, siteID: mainSite }
+    
     tjs.siteInfo(options, function(siteInfoError, siteInfo) {
         if ( !_.isNil(siteInfoError)) {
             logging.error(JSON.stringify(siteInfoError))
+            health.unhealthyEvent()
+            return
         }
+        
         logging.debug('siteInfo: ' + JSON.stringify(siteInfo))
         if ( !_.isNil(siteInfo) ) {
             const backup_reserve_percent = siteInfo.backup_reserve_percent
@@ -116,57 +119,77 @@ const doPoll = function() {
             logging.info('=   Version: ' + version)
             logging.info('=   Current Battery Mode: ' + default_real_mode)
             logging.info('=   Current Battery Reserve %: ' + backup_reserve_percent)
-            client.smartPublish(topic_prefix + '/reserve/mode', default_real_mode.toString())
-            client.smartPublish(topic_prefix + '/reserve/percent', backup_reserve_percent.toString())
-            client.smartPublish(topic_prefix + '/system/version', version.toString())
-            client.smartPublish(topic_prefix + '/system/battery_count', batteryCount.toString())
-            client.smartPublish(topic_prefix + '/system/has_batteries', battery.toString())
-            client.smartPublish(topic_prefix + '/system/has_solar', solar.toString())
-            client.smartPublish(topic_prefix + '/system/has_grid', grid.toString())
 
-            
-            tjs.siteStatus(options, function(siteStatusError, siteStatus) {
-                if ( !_.isNil(siteStatusError)) {
-                    logging.error(JSON.stringify(siteStatusError))
-                }
-                logging.debug('siteStatus: ' + JSON.stringify(siteStatus))
-                const solar_power = siteStatus.solar_power
-                const grid_status = siteStatus.grid_status
-                const grid_power = siteStatus.grid_power
-                const battery_power = siteStatus.battery_power
-                const energy_left = siteStatus.energy_left
-                const total_pack_energy = siteStatus.total_pack_energy
-                const load_power = siteStatus.load_power
-                logging.info('=   Solar Generation: ' + solar_power)
-                logging.info('=   Grid Usage: ' + grid_power)
-                logging.info('=   Battery Usage: ' + battery_power)
-                logging.info('=   Total Home Load: ' + load_power)
+            client.smartPublish(topic_prefix + '/reserve/mode', default_real_mode.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/reserve/percent', backup_reserve_percent.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/system/version', version.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/system/battery_count', batteryCount.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/system/has_batteries', battery.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/system/has_solar', solar.toString(), mqttOptions)
+            client.smartPublish(topic_prefix + '/system/has_grid', grid.toString(), mqttOptions)
 
-                logging.info('=   Grid Status: ' + grid_status)
-                logging.info('=   Total Battery Capacity: ' + total_pack_energy)
-                logging.info('=   Battery Remaining: ' + energy_left)
-                logging.info('=   Battery %: ' + ((energy_left / total_pack_energy) * 100))
-                
-                client.smartPublish(topic_prefix + '/reserve/mode', default_real_mode.toString())
-                client.smartPublish(topic_prefix + '/reserve/percent', backup_reserve_percent.toString())
-                client.smartPublish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString())
-                client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString())
-                client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString())
-                client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString())
-                client.smartPublish(topic_prefix + '/stats/grid_active', grid_status.toString())
-                client.smartPublish(topic_prefix + '/reserve/battery/percent', ((energy_left / total_pack_energy) * 100).toFixed(1).toString())
-                client.smartPublish(topic_prefix + '/reserve/battery/remaining', energy_left.toFixed(0).toString())
-                client.smartPublish(topic_prefix + '/reserve/battery/capacity', total_pack_energy.toString())
-                client.smartPublish(topic_prefix + '/reserve/battery/charging', (battery_power < 0) ? '1': '0')
-                client.smartPublish(topic_prefix + '/reserve/battery/discharging', (battery_power > 0) ? '1': '0')
-            })
+            health.healthyEvent()
         }
     })
 }
 
-const handleLogin = function(token) {
-    loginToken = token
+function pollLiveStatus() {
+    if ( _.isNil(loginToken)) return
+    if ( _.isNil(mainSite)) return
+    
+    logging.info('Polling live status')
 
+    var options = { authToken: loginToken, siteID: mainSite }
+
+    tjs.siteStatus(options, function(siteStatusError, siteStatus) {
+        if ( !_.isNil(siteStatusError)) {
+            logging.error(JSON.stringify(siteStatusError))
+            health.unhealthyEvent()
+            return
+        }
+
+        logging.debug('siteStatus: ' + JSON.stringify(siteStatus))
+        const solar_power = siteStatus.solar_power
+        const grid_status = siteStatus.grid_status
+        const grid_power = siteStatus.grid_power
+        const battery_power = siteStatus.battery_power
+        const energy_left = siteStatus.energy_left
+        const total_pack_energy = siteStatus.total_pack_energy
+        const load_power = siteStatus.load_power
+        logging.info('=   Solar Generation: ' + solar_power)
+        logging.info('=   Grid Usage: ' + grid_power)
+        logging.info('=   Battery Usage: ' + battery_power)
+        logging.info('=   Total Home Load: ' + load_power)
+
+        logging.info('=   Grid Status: ' + grid_status)
+        logging.info('=   Total Battery Capacity: ' + total_pack_energy)
+        logging.info('=   Battery Remaining: ' + energy_left)
+        logging.info('=   Battery %: ' + ((energy_left / total_pack_energy) * 100))
+        
+        client.smartPublish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/stats/grid_active', grid_status.toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/reserve/battery/percent', ((energy_left / total_pack_energy) * 100).toFixed(1).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/reserve/battery/remaining', energy_left.toFixed(0).toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/reserve/battery/capacity', total_pack_energy.toString(), mqttOptions)
+        client.smartPublish(topic_prefix + '/reserve/battery/charging', (battery_power < 0) ? '1': '0', mqttOptions)
+        client.smartPublish(topic_prefix + '/reserve/battery/discharging', (battery_power > 0) ? '1': '0', mqttOptions)
+
+        health.healthyEvent()
+    })
+}
+
+function doPoll() {
+    if ( _.isNil(loginToken)) return
+    if ( _.isNil(mainSite)) return
+
+    pollLiveStatus()
+    pollSiteInfo()
+}
+
+const handleLogin = function(token) {
     var options = { authToken: token }
 
     tjs.products(options, function(err, products) {
@@ -179,43 +202,40 @@ const handleLogin = function(token) {
             return
         }
         const energy_site_id = products.energy_site_id
-        const resource_type = products.resource_type
         const site_name = products.site_name
         const gateway_id = products.gateway_id
-        const energy_left = products.energy_left
-        const total_pack_energy = products.total_pack_energy
-        const battery_power = products.battery_power
 
         mainSite = energy_site_id
+        loginToken = token
 
         logging.info('===========================')
         logging.info('=  ' + site_name)
         logging.info('=  ')
         logging.info('=  Site ID: ' + energy_site_id)
         logging.info('=  Gateway ID: ' + gateway_id)
-        logging.info('=  Energy Stored: ' + energy_left)
-        logging.info('=  Energy Capacity: ' + total_pack_energy)
-        logging.info('=  Energy %: ' + ((energy_left / total_pack_energy) * 100))
         
         startPolling()
     })
 }
 
-tjs.login(username, password, function(err, result) {
-    if (result.error) {
-      logging.error(JSON.stringify(result.error))
-      process.exit(1)
-    }
+function doLogin() {
+    tjs.login(username, password, function(err, result) {
+        if (result.error) {
+            logging.error(JSON.stringify(result.error))
+            process.exit(1)
+        }
 
-    var token = JSON.stringify(result.authToken).toString().replace(/"/gi,'')
-    logging.debug('auth response: ' + JSON.stringify(result))
-    
-    if (token) {
-        logging.info('Login Succesful - token: ' + token)
-        setTimeout(() => {
-           handleLogin(token)
-        }, 1000 * 2)
-    } else {
-        logging.error('no token responded with')
-    }
-})
+        var token = JSON.stringify(result.authToken).toString().replace(/"/gi,'')
+        logging.debug('auth response: ' + JSON.stringify(result))
+        
+        if (token) {
+            logging.info('Login Succesful - token: ' + token)
+            handleLogin(token)
+        } else {
+            logging.error('no token responded with')
+        }
+    })
+}
+
+
+doLogin()

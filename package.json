@@ -20,8 +20,7 @@
     "teslajs": "git://github.com/terafin/TeslaJS.git",
     "lodash": "^4.17.4",
     "mqtt": "^2.15.1",
-    "request": "^2.83.0",
-    "xml2js": "^0.4.19"
+    "request": "^2.83.0"
   },
   "engines": {
     "node": ">=4"
