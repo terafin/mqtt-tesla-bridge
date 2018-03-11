@@ -113,7 +113,7 @@ function doQuery() {
     doGet(false, 'api/system_status/soe', function(err,httpResponse,response){
         logging.debug('soe response body: ' + JSON.stringify(response))
         if ( _.isNil(err) && !_.isNil(response) ) {
-            const percent = response.percentage
+            const percent = Number(response.percentage).toFixed(2)
             health.healthyEvent()
 
             client.smartPublish(topic_prefix + '/reserve/battery/percent', '' + percent, mqttOptions)
