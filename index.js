@@ -116,7 +116,7 @@ function doQuery() {
             const percent = response.percentage
             health.healthyEvent()
 
-            client.smartPublish(topic_prefix + '/reserve/battery/percent', percent, mqttOptions)
+            client.smartPublish(topic_prefix + '/reserve/battery/percent', percent.toString(), mqttOptions)
         }
     })
 
@@ -135,7 +135,7 @@ function doQuery() {
             client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString(), mqttOptions)
             client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString(), mqttOptions)
             client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString(), mqttOptions)
-            client.smartPublish(topic_prefix + '/stats/grid_active', grid_power > 50, mqttOptions)
+            client.smartPublish(topic_prefix + '/stats/grid_active', (grid_power > 50 ? '0' : '1').toString(), mqttOptions)
         }
     })
 }
