@@ -126,10 +126,10 @@ function doQuery() {
         
         if ( _.isNil(err ) ) {
             health.healthyEvent()
-            const solar_power = response.solar.instant_power
-            const grid_power = response.site.instant_power
-            const battery_power = response.battery.instant_power
-            const load_power = response.load.instant_power
+            const solar_power = !_.isNil(response.solar) ? response.solar.instant_power : 0
+            const grid_power = !_.isNil(response.site) ? response.site.instant_power : 0 
+            const battery_power = !_.isNil(response.battery) ? response.battery.instant_power : 0
+            const load_power = !_.isNil(response.load) ? response.load.instant_power : 0
 
             client.smartPublish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString(), mqttOptions)
             client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString(), mqttOptions)
