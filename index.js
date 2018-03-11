@@ -112,7 +112,7 @@ function doCommit() {
 function doQuery() {
     doGet(false, 'api/system_status/soe', function(err,httpResponse,response){
         logging.debug('soe response body: ' + JSON.stringify(response))
-        if ( _.isNil(err ) ) {
+        if ( _.isNil(err) && !_.isNil(response) ) {
             const percent = response.percentage
             health.healthyEvent()
 
@@ -124,7 +124,7 @@ function doQuery() {
         logging.debug('aggregate response body: ' + JSON.stringify(response))
         // const default_real_mode = siteInfo.default_real_mode
         
-        if ( _.isNil(err ) ) {
+        if ( _.isNil(err) && !_.isNil(response) ) {
             health.healthyEvent()
             const solar_power = !_.isNil(response.solar) ? response.solar.instant_power : 0
             const grid_power = !_.isNil(response.site) ? response.site.instant_power : 0 
@@ -136,6 +136,8 @@ function doQuery() {
             client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString(), mqttOptions)
             client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString(), mqttOptions)
             client.smartPublish(topic_prefix + '/stats/grid_active', '' + (grid_power > 50 ? '0' : '1'), mqttOptions)
+        } else {
+            health.unhealthyEvent()
         }
     })
 }
@@ -147,7 +149,8 @@ function setMode(batteryMode) {
         return
     }
     const formData = {
-        'mode': '' + batteryMode
+        'mode': '' + batteryMode,
+        'backup_reserve_percent': 70
     }
     
     const url = powerwallURL('api/operation')
@@ -174,7 +177,8 @@ function setReservePercent(percent) {
         return
     }
     const formData = {
-        'backup_reserve_percent': percent
+        'mode': 'self_consumption',
+        'backup_reserve_percent': Number(percent)
     }
     
     const url = powerwallURL('api/operation')
