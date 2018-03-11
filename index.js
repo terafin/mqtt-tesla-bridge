@@ -44,7 +44,7 @@ var disconnectedEvent = function() {
 }
 
 // Gateway Functions
-ar authToken = null
+var authToken = null
 
 function powerwallURL(path) {
     return 'http://' + gatewayIP + '/' + path
