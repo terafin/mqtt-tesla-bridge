@@ -148,7 +148,6 @@ function doQuery() {
 
 function setMode(batteryMode) {
     if ( _.isNil(authToken) )  {
-        authenticate()
         logging.error('cannot set mode, not authenticated')
         return
     }
@@ -176,7 +175,6 @@ function setMode(batteryMode) {
 
 function setReservePercent(percent) {
     if ( _.isNil(authToken) )  {
-        authenticate()
         logging.error('cannot set mode, not authenticated')
         return
     }
