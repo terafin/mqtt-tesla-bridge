@@ -115,7 +115,7 @@ function doCommit() {
 }
 function doQuery() {
     doGet(false, 'api/system_status/soe', function(err,httpResponse,response){
-        logging.debug('soe response body: ' + JSON.stringify(response))
+        logging.info('soe response body: ' + JSON.stringify(response))
         if ( _.isNil(err) && !_.isNil(response) ) {
             const percent = Number(response.percentage).toFixed(2)
             health.healthyEvent()
@@ -125,7 +125,7 @@ function doQuery() {
     })
 
     doGet(false, 'api/meters/aggregates', function(err,httpResponse,response){
-        logging.debug('aggregate response body: ' + JSON.stringify(response))
+        logging.info('aggregate response body: ' + JSON.stringify(response))
         // const default_real_mode = siteInfo.default_real_mode
         
         if ( _.isNil(err) && !_.isNil(response) ) {
@@ -217,17 +217,15 @@ client.on('message', (topic, message) => {
     }
 })
 
-var polling = false
-const startPolling = function() {
-    if ( polling )
-        return
-    
-    repeat(doPoll).every(5, 's').start.in(5, 'sec')
+const startPolling = function() {    
+    logging.info('starting poll')
+    repeat(doPoll).every(5, 's').start.in(2, 'sec')
 }
 
 function doPoll() {
     doQuery()
 }
+
 
 authenticate()
 startPolling()
