@@ -36,12 +36,14 @@ const reserveTopicSuffix = '/reserve/percent/set'
 const modeTopicSuffix = '/reserve/mode/set'
 
 var connectedEvent = function() {
+    logging.info('connected')
     health.healthyEvent()
     client.subscribe(topic_prefix + reserveTopicSuffix)
     client.subscribe(topic_prefix + modeTopicSuffix)
 }
 
 var disconnectedEvent = function() {
+    logging.info('disconnected')
     health.unhealthyEvent()
 }
 
@@ -118,7 +120,7 @@ function doQuery() {
             const percent = Number(response.percentage).toFixed(2)
             health.healthyEvent()
 
-            client.smartPublish(topic_prefix + '/reserve/battery/percent', '' + percent, mqttOptions)
+            client.publish(topic_prefix + '/reserve/battery/percent', '' + percent, mqttOptions)
         }
     })
 
@@ -133,11 +135,11 @@ function doQuery() {
             const battery_power = !_.isNil(response.battery) ? response.battery.instant_power : 0
             const load_power = !_.isNil(response.load) ? response.load.instant_power : 0
 
-            client.smartPublish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString(), mqttOptions)
-            client.smartPublish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString(), mqttOptions)
-            client.smartPublish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString(), mqttOptions)
-            client.smartPublish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString(), mqttOptions)
-            client.smartPublish(topic_prefix + '/stats/grid_active', '' + (grid_power > 50 ? '0' : '1'), mqttOptions)
+            client.publish(topic_prefix + '/stats/solar_generation', solar_power.toFixed(2).toString(), mqttOptions)
+            client.publish(topic_prefix + '/stats/grid_usage', grid_power.toFixed(2).toString(), mqttOptions)
+            client.publish(topic_prefix + '/stats/battery_usage', battery_power.toFixed(2).toString(), mqttOptions)
+            client.publish(topic_prefix + '/stats/home_load', load_power.toFixed(2).toString(), mqttOptions)
+            client.publish(topic_prefix + '/stats/grid_active', '' + (grid_power > 50 ? '0' : '1'), mqttOptions)
         } else {
             health.unhealthyEvent()
         }
