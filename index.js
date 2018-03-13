@@ -30,6 +30,8 @@ if (!_.isNil(shouldRetain)) {
     mqttOptions['retain'] = shouldRetain
 }
 
+var client = null
+
 const reserveTopicSuffix = '/reserve/percent/set'
 const modeTopicSuffix = '/reserve/mode/set'
 
@@ -200,7 +202,8 @@ function setReservePercent(percent) {
 
 
 // Setup MQTT
-const client = mqtt.setupClient(connectedEvent, disconnectedEvent)
+logging.info('connecting to MQTT host')
+client = mqtt.setupClient(connectedEvent, disconnectedEvent)
 
 client.on('message', (topic, message) => {
     logging.info(' ' + topic + ':' + message)
