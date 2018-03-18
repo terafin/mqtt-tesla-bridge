@@ -88,7 +88,8 @@ tesla.on('grid-updated', (result) => {
     }
 
     client.publish(topic_prefix + '/stats/grid_usage', result.toFixed(2).toString(), mqttOptions)
-    client.publish(topic_prefix + '/stats/grid_active', '' + (result > 50 ? '0' : '1'), mqttOptions)
+    client.publish(topic_prefix + '/stats/grid_active', '' + (result > 50 ? '1' : '0'), mqttOptions)
+    
     health.healthyEvent()
 })
 
