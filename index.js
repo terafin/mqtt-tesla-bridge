@@ -65,7 +65,7 @@ tesla.on('soe-updated', (result) => {
         return
     }
 
-    client.publish(topic_prefix + '/reserve/battery/percent', '' + result.toFixed(2), mqttOptions)
+    client.smartPublish(topic_prefix + '/reserve/battery/percent', '' + result.toFixed(2), mqttOptions)
     health.healthyEvent()
 })
 
@@ -76,7 +76,7 @@ tesla.on('solar-updated', (result) => {
         return
     }
 
-    client.publish(topic_prefix + '/stats/solar_generation', result.toFixed(2).toString(), mqttOptions)
+    client.smartPublish(topic_prefix + '/stats/solar_generation', result.toFixed(2).toString(), mqttOptions)
     health.healthyEvent()
 })
 
@@ -87,8 +87,8 @@ tesla.on('grid-updated', (result) => {
         return
     }
 
-    client.publish(topic_prefix + '/stats/grid_usage', result.toFixed(2).toString(), mqttOptions)
-    client.publish(topic_prefix + '/stats/grid_active', '' + (result > 50 ? '1' : '0'), mqttOptions)
+    client.smartPublish(topic_prefix + '/stats/grid_usage', result.toFixed(2).toString(), mqttOptions)
+    client.smartPublish(topic_prefix + '/stats/grid_active', '' + (result > 50 ? '1' : '0'), mqttOptions)
     
     health.healthyEvent()
 })
@@ -100,7 +100,7 @@ tesla.on('battery-updated', (result) => {
         return
     }
 
-    client.publish(topic_prefix + '/stats/battery_usage', result.toFixed(2).toString(), mqttOptions)
+    client.smartPublish(topic_prefix + '/stats/battery_usage', result.toFixed(2).toString(), mqttOptions)
     health.healthyEvent()
 })
 
@@ -111,7 +111,7 @@ tesla.on('load-updated', (result) => {
         return
     }
 
-    client.publish(topic_prefix + '/stats/home_load', result.toFixed(2).toString(), mqttOptions)
+    client.smartPublish(topic_prefix + '/stats/home_load', result.toFixed(2).toString(), mqttOptions)
     health.healthyEvent()
 })
 
