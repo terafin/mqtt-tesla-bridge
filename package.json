@@ -19,7 +19,8 @@
     "homeautomation-js-lib": "git://github.com/terafin/homeautomation-js-lib.git",
     "lodash": "latest",
     "mqtt": "latest",
-    "request": "latest"
+    "request": "latest",
+    "repeat": "latest"
   },
   "engines": {
     "node": ">=4"
