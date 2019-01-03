@@ -116,4 +116,3 @@ tesla.on('load-updated', (result) => {
 })
 
 tesla.startPolling()
-
