@@ -116,3 +116,7 @@ tesla.on('load-updated', (result) => {
 })
 
 tesla.startPolling()
+
+// setTimeout(function(){
+// 	tesla.setMode('reserve')
+// }, 14000)
