@@ -2,10 +2,8 @@ const mqtt = require('mqtt')
 const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
 const health = require('homeautomation-js-lib/health.js')
- 
 const tesla = require('./lib/tesla.js')
-
-require('homeautomation-js-lib/mqtt_helpers.js')
+const mqtt_helpers = require('homeautomation-js-lib/mqtt_helpers.js')
 
 // Config
 var topic_prefix = process.env.TOPIC_PREFIX
@@ -46,7 +44,7 @@ var disconnectedEvent = function() {
 
 // Setup MQTT
 logging.info('connecting to MQTT host')
-client = mqtt.setupClient(connectedEvent, disconnectedEvent)
+client = mqtt_helpers.setupClient(connectedEvent, disconnectedEvent)
 
 client.on('message', (topic, message) => {
 	logging.info(' ' + topic + ':' + message)
