@@ -16,7 +16,7 @@
     "url": "https://github.com/terafin/mqtt-tesla-bridge/issues"
   },
   "dependencies": {
-    "homeautomation-js-lib": "git://github.com/terafin/homeautomation-js-lib.git",
+    "homeautomation-js-lib": "git+https://gitlab.siliconspirit.net/home/homeautomation-js-lib.git",
     "lodash": "^4.17.11",
     "mqtt": "latest",
     "repeat": "0.0.6",
