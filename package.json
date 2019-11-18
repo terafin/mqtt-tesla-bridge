@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "homeautomation-js-lib": "git+https://gitlab.siliconspirit.net/home/homeautomation-js-lib.git",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "mqtt": "latest",
     "repeat": "0.0.6",
     "request": "latest"
