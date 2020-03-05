@@ -20,7 +20,7 @@
         "lodash": "^4.17.15",
         "mqtt": "latest",
         "repeat": "0.0.6",
-        "request": "latest"
+        "request": "2.88.2"
     },
     "engines": {
         "node": ">=4"
