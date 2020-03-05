@@ -1,29 +1,29 @@
 {
-    "name": "mqtt-tesla-bridge",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "start": "node index.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/terafin/mqtt-tesla-bridge.git"
-    },
-    "author": "Justin Wood",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/terafin/mqtt-tesla-bridge/issues"
-    },
-    "dependencies": {
-        "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
-        "lodash": "^4.17.15",
-        "mqtt": "latest",
-        "repeat": "0.0.6",
-        "request": "2.88.2"
-    },
-    "engines": {
-        "node": ">=4"
-    },
-    "homepage": "https://github.com/terafin/mqtt-tesla-bridge#readme"
+  "name": "mqtt-tesla-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terafin/mqtt-tesla-bridge.git"
+  },
+  "author": "Justin Wood",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/terafin/mqtt-tesla-bridge/issues"
+  },
+  "dependencies": {
+    "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
+    "lodash": "^4.17.15",
+    "mqtt": "latest",
+    "repeat": "0.0.6",
+    "request": "2.88.2"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "homepage": "https://github.com/terafin/mqtt-tesla-bridge#readme"
 }
