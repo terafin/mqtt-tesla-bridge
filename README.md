@@ -1,34 +1,89 @@
 # mqtt-tesla-bridge
-mqtt-tesla-bridge
 
+This is a simple docker container that I use to bridge to/from my MQTT bridge.
 
-# Required environment variables
+I have a collection of bridges, and the general format of these begins with these environment variables:
 
+```yaml
+      TOPIC_PREFIX: /your_topic_prefix  (eg: /some_topic_prefix/somthing)
+      MQTT_HOST: YOUR_MQTT_URL (eg: mqtt://mqtt.yourdomain.net)
+      (OPTIONAL) MQTT_USER: YOUR_MQTT_USERNAME
+      (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
+```
+
+## Required environment variables
+
+```yaml
 MQTT_HOST: "mqtt://your-mqtt.server.here"
 TESLA_USERNAME: <Your Tesla Email>
 TESLA_PASSWORD: <Your Password>
 TOPIC_PREFIX: "/tesla"
+CONTROLLER_IP: <YOUR_TESLA_POWERWALL_CONTROLLER_IP>
+CONTROLLER_SERIAL_NUMBER: <YOUR_TESLA_SERIAL_NUMBER>
+```
 
+## Example Simple Docker Usage
 
-# Example Usage
+Note: I recommend using docker-compose (lower down in docs), this is just a good/simple way to quickly test it
 
-docker run terafin/mqtt-tesla-bridge -e TOPIC_PREFIX="/tesla" -e TESLA_USERNAME="bob@joe.com" -e TESLA_PASSWORD="yourFancyPassword" -e MQTT_HOST="mqtt://mymqtt.local.address"
+```bash
+docker run terafin/mqtt-tesla-bridge:latest -e TOPIC_PREFIX="/tesla" -e TESLA_USERNAME="bob@joe.com" -e TESLA_PASSWORD="yourFancyPassword" -e MQTT_HOST="mqtt://mymqtt.local.address" -e CONTROLLER_IP="YOUR_CONTROLLER_IP" -e CONTROLLER_SERIAL_NUMBER="YOUR_CONTROLLER_SERIAL_NUMBER"
+```
 
 This will spin up a working tesla bridge, which current has the supported commands:
 
-# Set the reserve % to 90%
-mosquitto_pub -h 10.0.1.10 -t "/tesla/reserve/percent/set" -m "90" 
+### Set the reserve % to 90%
 
-# Set the reserve mode to battery backup
-mosquitto_pub -h 10.0.1.10 -t "/tesla/reserve/mode/set" -m "backup" 
+```bash
+mosquitto_pub -h your_mqtt_host -t "/tesla/reserve/percent/set" -m "90"
+```
 
-# Set the reserve mode to using battery until above reserve %
-mosquitto_pub -h 10.0.1.10 -t "/tesla/reserve/mode/set" -m "self_consumption" 
+### Set the reserve mode to battery backup
 
-# MQTT results
+```bash
+mosquitto_pub -h your_mqtt_host -t "/tesla/reserve/mode/set" -m "backup"
+```
+
+### Set the reserve mode to using battery until above reserve %
+
+```bash
+mosquitto_pub -h your_mqtt_host -t "/tesla/reserve/mode/set" -m "self_consumption"
+```
+
+## Example Docker Compose
+
+Here's an example docker compose
+(my recommended way to use this):
+
+```yaml
+version: "3.4"
+services:
+    mqtt-tesla-bridge:
+        image: terafin/mqtt-tesla-bridge:latest
+        container_name: mqtt-tesla-bridge
+        environment:
+            LOGGING_NAME: mqtt-tesla-bridge
+            TZ: America/Los_Angeles
+            TOPIC_PREFIX: /tesla
+            MQTT_HOST: mqtt://YOUR_MQTT_IP
+            (OPTIONAL) MQTT_USER: MQTT_USERNAME
+            (OPTIONAL) MQTT_PASS: MQTT_PASSWORD
+            CONTROLLER_SERIAL_NUMBER: YOUR_SERIAL_NUMBER_STRING
+            CONTROLLER_IP: LOCAL_CONTROLLER_IP
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "5"
+            driver: json-file
+        tty: true
+        restart: always
+```
+
+## MQTT output
 
 Here's some sample (from my system) results after using the above setup:
 
+```log
 /tesla/reserve/mode self_consumption
 /tesla/reserve/percent 95
 /tesla/system/version 1.10.2
@@ -46,6 +101,6 @@ Here's some sample (from my system) results after using the above setup:
 /tesla/reserve/battery/capacity 41675
 /tesla/reserve/battery/charging 1
 /tesla/reserve/battery/discharging 0
+```
 
-
-These will poll every 5 seconds.
+These will be polled/update every 5 seconds
