@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
-        "lodash": "^4.17.20",
+        "lodash": "^4.17.21",
         "mqtt": "latest",
         "interval-promise": "latest",
         "request": "latest"
