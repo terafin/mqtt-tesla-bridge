@@ -115,9 +115,9 @@ tesla.on('load-updated', (result) => {
 
 tesla.startPolling()
 
-// setTimeout(function(){
-// 	// tesla.setReservePercent(50)
-// 	tesla.setMode('self_consumption')
-// 	// tesla.setMode('backup')
-// 	// tesla.setMode('reserve')
-// }, 14000)
+// setTimeout(function() {
+//     tesla.setReservePercent(50)
+//         // 	tesla.setMode('self_consumption')
+//         // 	// tesla.setMode('backup')
+//         // 	// tesla.setMode('reserve')
+// }, 10 * 1000)
