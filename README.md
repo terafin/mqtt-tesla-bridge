@@ -19,7 +19,6 @@ TESLA_USERNAME: <Your Tesla Email>
 TESLA_PASSWORD: <Your Password>
 TOPIC_PREFIX: "/tesla"
 CONTROLLER_IP: <YOUR_TESLA_POWERWALL_CONTROLLER_IP>
-CONTROLLER_SERIAL_NUMBER: <YOUR_TESLA_SERIAL_NUMBER>
 ```
 
 ## Example Simple Docker Usage
@@ -27,7 +26,7 @@ CONTROLLER_SERIAL_NUMBER: <YOUR_TESLA_SERIAL_NUMBER>
 Note: I recommend using docker-compose (lower down in docs), this is just a good/simple way to quickly test it
 
 ```bash
-docker run terafin/mqtt-tesla-bridge:latest -e TOPIC_PREFIX="/tesla" -e TESLA_USERNAME="bob@joe.com" -e TESLA_PASSWORD="yourFancyPassword" -e MQTT_HOST="mqtt://mymqtt.local.address" -e CONTROLLER_IP="YOUR_CONTROLLER_IP" -e CONTROLLER_SERIAL_NUMBER="YOUR_CONTROLLER_SERIAL_NUMBER"
+docker run terafin/mqtt-tesla-bridge:latest -e TOPIC_PREFIX="/tesla" -e TESLA_USERNAME="bob@joe.com" -e TESLA_PASSWORD="yourFancyPassword" -e MQTT_HOST="mqtt://mymqtt.local.address" -e CONTROLLER_IP="YOUR_CONTROLLER_IP"
 ```
 
 This will spin up a working tesla bridge, which current has the supported commands:
@@ -68,7 +67,8 @@ services:
             MQTT_HOST: mqtt://YOUR_MQTT_IP
             (OPTIONAL) MQTT_USER: MQTT_USERNAME
             (OPTIONAL) MQTT_PASS: MQTT_PASSWORD
-            CONTROLLER_SERIAL_NUMBER: YOUR_SERIAL_NUMBER_STRING
+            TESLA_USERNAME: YOUR_TESLA_USERNAME
+            TESLA_PASSWORD: YOUR_TESLA_PASSWORD
             CONTROLLER_IP: LOCAL_CONTROLLER_IP
         logging:
             options:
