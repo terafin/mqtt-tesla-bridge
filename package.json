@@ -20,7 +20,7 @@
         "lodash": "^4.17.20",
         "mqtt": "latest",
         "interval-promise": "latest",
-        "got": "^11.0.0"
+        "got": "^12.3.0"
     },
     "engines": {
         "node": ">=4"
