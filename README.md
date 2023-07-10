@@ -58,7 +58,7 @@ Here's an example docker compose
 version: "3.4"
 services:
     mqtt-tesla-bridge:
-        image: terafin/mqtt-tesla-bridge:latest
+        image: ghcr.io/terafin/mqtt-tesla-bridge:latest
         container_name: mqtt-tesla-bridge
         environment:
             LOGGING_NAME: mqtt-tesla-bridge
